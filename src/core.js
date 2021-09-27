@@ -1752,6 +1752,7 @@ Strophe.Connection = class Connection {
      *      details.
      */
     connect (jid, pass, callback, wait, hold, route, authcid) {
+        // console.error('strophe core',jid);
         this.jid = jid;
         /** Variable: authzid
          *  Authorization identity.
@@ -2680,9 +2681,12 @@ Strophe.Connection = class Connection {
      *          started.
      */
     _attemptSASLAuth (mechanisms) {
-        mechanisms = this.sortMechanismsByPriority(mechanisms || []);
+        console.log('_attemptSASLAuth',mechanisms);
+       // mechanisms = this.sortMechanismsByPriority(mechanisms || []);
+        console.log('_attemptSASLAuth 2',mechanisms);
         let mechanism_found = false;
         for (let i=0; i < mechanisms.length; ++i) {
+            console.log('_attemptSASLAuth 3',JSON.stringify(mechanisms[i]));
             if (!mechanisms[i].test(this)) {
                 continue;
             }
@@ -2698,6 +2702,7 @@ Strophe.Connection = class Connection {
 
             this._sasl_mechanism = mechanisms[i];
             this._sasl_mechanism.onStart(this);
+            console.log('_attemptSASLAuth 4',this._sasl_mechanism.mechname,this._sasl_mechanism.isClientFirst);
 
             const request_auth_exchange = $build("auth", {
                 'xmlns': Strophe.NS.SASL,
@@ -2707,7 +2712,9 @@ Strophe.Connection = class Connection {
                 const response = this._sasl_mechanism.clientChallenge(this);
                 request_auth_exchange.t(btoa(response));
             }
-            this.send(request_auth_exchange.tree());
+            let authSended = request_auth_exchange.tree();
+            console.log('_attemptSASLAuth 5',authSended.toString());
+            this.send(authSended);
             mechanism_found = true;
             break;
         }
@@ -2734,6 +2741,7 @@ Strophe.Connection = class Connection {
      *  Attempt legacy (i.e. non-SASL) authentication.
      */
     _attemptLegacyAuth () {
+        console.log('_attemptLegacyAuth');
         if (Strophe.getNodeFromJid(this.jid) === null) {
             // we don't have a node, which is required for non-anonymous
             // client connections
@@ -2790,6 +2798,8 @@ Strophe.Connection = class Connection {
         iq.up().c('resource', {}).t(Strophe.getResourceFromJid(this.jid));
 
         this._addSysHandler(this._auth2_cb.bind(this), null, null, null, "_auth_2");
+        
+        console.log('_onLegacyAuthIQResult',iq.tree(),elem);
         this.send(iq.tree());
         return false;
     }

@@ -23,14 +23,30 @@
  *   https://www.npmjs.com/package/ws
  */
 function getWebSocketImplementation () {
-    let WebSocketImplementation = global.WebSocket
+    console.info('getWebSocketImplementation');
+    let WebSocketImplementation = undefined;
+    try{
+        WebSocketImplementation = global.uniWebSocket;// uniapp
+        console.log('shims 1');
+    }catch(e){
+        console.warn(e);
+    }
+
     if (typeof WebSocketImplementation === 'undefined') {
+        console.log('shims 2');
+        WebSocketImplementation = global.WebSocket
+    }
+    console.info('getWebSocketImplementation',WebSocketImplementation);
+    if (typeof WebSocketImplementation === 'undefined') {
+        console.log('shims 3');
         try {
             WebSocketImplementation = require('ws');
         } catch (err) {
+            console.info('getWebSocketImplementation',err);
             throw new Error('You must install the "ws" package to use Strophe in nodejs.');
         }
     }
+    console.info('getWebSocketImplementation2', WebSocketImplementation);
     return WebSocketImplementation
 }
 export const WebSocket = getWebSocketImplementation()

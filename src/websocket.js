@@ -42,6 +42,7 @@ Strophe.Websocket = class Websocket {
      *    A new Strophe.WebSocket object.
      */
     constructor (connection) {
+        console.log('Websocket constructor',connection);
         this._conn = connection;
         this.strip = "wrapper";
 
@@ -151,9 +152,36 @@ Strophe.Websocket = class Websocket {
      *  Does nothing if there already is a WebSocket.
      */
     _connect () {
+        console.log("_connect");
         // Ensure that there is no open WebSocket from a previous Connection.
         this._closeSocket();
         this.socket = new WebSocket(this._conn.service, "xmpp");
+        // super({
+        //     url: service,
+        //     header: {'content-type': 'application/json'},
+        //     protocols: protocol,//['xmpp'],
+        //     method: 'GET',
+        //     complete: ()=> {},//需要至少传入 success / fail / complete 参数中的一个
+        //     // success:function(data){
+        //     //     console.log("Connection success:",data);
+        //     // },
+        //     // fail:function(err){
+        //     //     console.log("Connection fail:",err);
+        //     // }
+        // });
+         console.log("_connect 2",this.socket);
+        // this.socket.onOpen((res)=>{
+        //     console.log('onOpen');
+        // });
+        // this.socket.onMessage((res)=>{
+        //     console.log('onMessage');
+        // });
+        // this.socket.onClose((res)=>{
+        //     console.log('onClose');
+        // });
+        // this.socket.onError((res)=>{
+        //     console.log('onError');
+        // });
         this.socket.onopen = () => this._onOpen();
         this.socket.onerror = (e) => this._onError(e);
         this.socket.onclose = (e) => this._onClose(e);
