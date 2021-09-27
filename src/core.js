@@ -2682,11 +2682,11 @@ Strophe.Connection = class Connection {
      */
     _attemptSASLAuth (mechanisms) {
         console.log('_attemptSASLAuth',mechanisms);
-       // mechanisms = this.sortMechanismsByPriority(mechanisms || []);
-        console.log('_attemptSASLAuth 2',mechanisms);
+       // mechanisms = this.sortMechanismsByPriority(mechanisms || []);// UniAPP 上 SCRAM-SHA-1 授权失败，采用 PLAIN（不安全）
+        //console.log('_attemptSASLAuth 2',mechanisms);
         let mechanism_found = false;
         for (let i=0; i < mechanisms.length; ++i) {
-            console.log('_attemptSASLAuth 3',JSON.stringify(mechanisms[i]));
+            //console.log('_attemptSASLAuth 3',JSON.stringify(mechanisms[i]));
             if (!mechanisms[i].test(this)) {
                 continue;
             }
@@ -2702,7 +2702,7 @@ Strophe.Connection = class Connection {
 
             this._sasl_mechanism = mechanisms[i];
             this._sasl_mechanism.onStart(this);
-            console.log('_attemptSASLAuth 4',this._sasl_mechanism.mechname,this._sasl_mechanism.isClientFirst);
+            //console.log('_attemptSASLAuth 4',this._sasl_mechanism.mechname,this._sasl_mechanism.isClientFirst);
 
             const request_auth_exchange = $build("auth", {
                 'xmlns': Strophe.NS.SASL,
@@ -2713,7 +2713,7 @@ Strophe.Connection = class Connection {
                 request_auth_exchange.t(btoa(response));
             }
             let authSended = request_auth_exchange.tree();
-            console.log('_attemptSASLAuth 5',authSended.toString());
+            //console.log('_attemptSASLAuth 5',authSended.toString());
             this.send(authSended);
             mechanism_found = true;
             break;

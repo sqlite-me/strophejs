@@ -8,6 +8,61 @@
  * NPM module that provides a compatible implementation.
  */
 
+let sCount=0,rCount=0;
+/* Uni App 
+*/
+class uniWebSocket{
+    constructor(service,protocol){
+        console.log('__app private',service,protocol)
+      const socket =  uni.connectSocket({
+            url: service,
+            header: {'content-type': 'application/json'},
+            protocols: protocol,//['xmpp'],
+            method: 'GET',
+            complete: (data)=> {
+                //console.log("__app Connection complete 2:",data);
+            },//需要至少传入 success / fail / complete 参数中的一个
+            success:function(data){
+                //console.log("__app Connection success:",data);
+            },
+            fail:function(err){
+                //console.log("__app Connection fail:",err);
+            }
+        });
+        
+        let me=this;
+        socket.onOpen(function (res) {
+            console.log('__app onOpen', res);
+            if(me.onopen)
+                me.onopen(res);
+        });
+        
+        socket.onClose(function(e){
+            if(me.onclose)
+                me.onclose(e);
+            console.log('__app onClose',e);
+        });
+        socket.onError(function(e){
+            if(me.onerror)
+                me.onerror(e);
+            console.error('__app onError',e);
+        });
+        
+        socket.onMessage(function (res) {
+            console.log('__app onMessage '+(++rCount),res.data);
+            if(me.onmessage)
+                me.onmessage(res);
+        });
+        this.__socket=socket;
+    }
+    send(data){
+        console.log('__app sned '+(++sCount),data)
+        //if(sCount==2) throw new Error('Test');
+        this.__socket.send({data:data});
+    }
+}
+// global.uniWebSocket = uniWebSocket;
+
 /* global global */
 
 /**
@@ -26,7 +81,7 @@ function getWebSocketImplementation () {
     console.info('getWebSocketImplementation');
     let WebSocketImplementation = undefined;
     try{
-        WebSocketImplementation = global.uniWebSocket;// uniapp
+        WebSocketImplementation = uniWebSocket;// uniapp
         console.log('shims 1');
     }catch(e){
         console.warn(e);
